@@ -1,16 +1,23 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class MainMenuManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void PlayGame()
     {
-        
+        SceneManager.LoadScene("Kitchen");
     }
 
-    // Update is called once per frame
-    void Update()
+    public void QuitGame()
     {
-        
+#if UNITY_EDITOR
+        EditorApplication.ExitPlaymode();
+#else
+        Application.Quit();
+#endif
     }
 }
