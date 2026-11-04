@@ -1,17 +1,28 @@
 
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
+using TMPro;
 
 public class RecipeManager : MonoBehaviour
 {
+    // ENCAPSULATION: Recipe data and selected ingredients
+    // are managed internally by RecipeManager.
     [SerializeField] private Recipe currentRecipe;
 
-    // ENCAPSULATION: Only this class can modify the
-    // collection of ingredients selected by the player.
+    // UI references
+    [SerializeField] private TMP_Text orderText;
+    [SerializeField] private TMP_Text ingredientsText;
+
     private HashSet<string> selectedIngredients = new HashSet<string>();
 
-    // ABSTRACTION: Other classes simply submit an ingredient.
-    // They don't need to know how recipe validation works.
+    private void Start()
+    {
+        UpdateOrderDisplay();
+    }
+
+    // ABSTRACTION: Other classes only need to submit
+    // an ingredient. They don't need to know the recipe rules.
     public void SelectIngredient(Ingredient ingredient)
     {
         string ingredientName = ingredient.IngredientName;
@@ -30,6 +41,8 @@ public class RecipeManager : MonoBehaviour
 
         Debug.Log("Correct ingredient: " + ingredientName);
 
+        UpdateOrderDisplay();
+
         if (selectedIngredients.Count ==
             currentRecipe.RequiredIngredientCount)
         {
@@ -37,6 +50,29 @@ public class RecipeManager : MonoBehaviour
                       currentRecipe.RecipeName);
 
             selectedIngredients.Clear();
+            UpdateOrderDisplay();
         }
+    }
+
+    // ABSTRACTION: This method handles all the details
+    // of converting recipe progress into UI text.
+    private void UpdateOrderDisplay()
+    {
+        orderText.text = "CURRENT ORDER\n" +
+                         currentRecipe.RecipeName;
+
+        StringBuilder builder = new StringBuilder();
+
+        foreach (string ingredientName in
+                 currentRecipe.RequiredIngredients)
+        {
+            bool isSelected =
+                selectedIngredients.Contains(ingredientName);
+
+            builder.Append(isSelected ? "[X] " : "[ ] ");
+            builder.AppendLine(ingredientName);
+        }
+
+        ingredientsText.text = builder.ToString();
     }
 }

@@ -13,6 +13,11 @@ public class Recipe
     // without directly modifying the private fields.
     public string RecipeName => recipeName;
 
+    // ENCAPSULATION: Exposes read-only access to the ingredient list.
+    // The underlying list remains private.
+    public IReadOnlyList<string> RequiredIngredients =>
+        requiredIngredients;
+
     // ABSTRACTION: Other classes can ask whether an ingredient
     // belongs to this recipe without accessing the list directly.
     public bool RequiresIngredient(string ingredientName)
