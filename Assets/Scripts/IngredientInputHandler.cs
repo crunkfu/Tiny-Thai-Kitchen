@@ -6,6 +6,8 @@ public class IngredientInputHandler : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
 
+    [SerializeField] private RecipeManager recipeManager;
+
     private void Update()
     {
         if (Mouse.current != null &&
@@ -15,6 +17,7 @@ public class IngredientInputHandler : MonoBehaviour
         }
     }
 
+
     private void CheckForIngredient()
     {
         Vector2 mousePosition = Mouse.current.position.ReadValue();
@@ -23,7 +26,15 @@ public class IngredientInputHandler : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            Debug.Log("Clicked on: " + hit.collider.gameObject.name);
+            if (hit.collider.TryGetComponent(out Ingredient ingredient))
+            {
+                ingredient.Interact();
+
+                // ABSTRACTION: The input handler sends the ingredient
+                // to the manager without knowing the recipe rules.
+                recipeManager.SelectIngredient(ingredient);
+            }
         }
     }
+
 }
