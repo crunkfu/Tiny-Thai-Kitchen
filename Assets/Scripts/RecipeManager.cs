@@ -5,6 +5,12 @@ using System.Text;
 using UnityEngine;
 using TMPro;
 
+using UnityEngine.SceneManagement;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 public class RecipeManager : MonoBehaviour
 {
     // ENCAPSULATION: Game settings are private but
@@ -21,6 +27,9 @@ public class RecipeManager : MonoBehaviour
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private TMP_Text messageText;
     [SerializeField] private TMP_Text finalScoreText;
+    // ENCAPSULATION: End-game UI is controlled by RecipeManager.
+    [SerializeField] private GameObject restartButton;
+    [SerializeField] private GameObject quitButton;
 
     // ENCAPSULATION: Game state is managed internally.
     private Recipe currentRecipe;
@@ -35,6 +44,9 @@ public class RecipeManager : MonoBehaviour
 
     private void Start()
     {
+        restartButton.SetActive(false);
+        quitButton.SetActive(false);
+
         messageText.text = "";
         finalScoreText.text = "";
 
@@ -108,8 +120,10 @@ public class RecipeManager : MonoBehaviour
     }
 
     // ABSTRACTION: Handles the game's victory state.
+
     private void EndGame()
     {
+        // ABSTRACTION: EndGame() handles all victory-state changes.
         orderText.text = "";
         ingredientsText.text = "";
 
@@ -118,8 +132,13 @@ public class RecipeManager : MonoBehaviour
             "Orders completed: " + completedOrders + "\n" +
             "Final score: " + score;
 
+        // Show the end-game buttons.
+        restartButton.SetActive(true);
+        quitButton.SetActive(true);
+
         Debug.Log("Game completed! Final score: " + score);
     }
+
 
     private void AddScore(int points)
     {
@@ -172,4 +191,20 @@ public class RecipeManager : MonoBehaviour
 
         ingredientsText.text = builder.ToString();
     }
+
+
+    // ABSTRACTION: Restarting is handled by one public method.
+    public void RestartGame()
+    {
+        // Reloading the scene resets the game state.
+        SceneManager.LoadScene("Kitchen");
+    }
+
+    // ABSTRACTION: Other classes and UI buttons can request
+    // quitting without knowing which environment is running.
+    public void ReturnToMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
 }
